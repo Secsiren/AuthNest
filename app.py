@@ -1,8 +1,12 @@
 from flask import Flask, request, render_template_string
 import sqlite3
 from hashlib import sha256  # For password hashing
+import os  # For environment variables
 
 app = Flask(__name__)
+
+# Database file path (from environment variable)
+DATABASE = os.getenv('DATABASE_URL', 'sqlite:////app/users.db').replace('sqlite:///', '')
 
 # Initialize SQLite database
 def init_db():
@@ -94,7 +98,7 @@ def login():
         </form>
     ''')
 
-# Bind to all interfaces 
+# Bind to all interfaces
 if __name__ == '__main__':
     init_db()
     app.run(debug=False, host='0.0.0.0')  # Set debug=False for production
