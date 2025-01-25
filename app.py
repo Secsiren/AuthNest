@@ -1,5 +1,6 @@
-from flask import Flask, request, redirect, render_template_string
+from flask import Flask, request, render_template_string
 import sqlite3
+from hashlib import sha256  # For password hashing
 
 app = Flask(__name__)
 
@@ -11,12 +12,16 @@ def init_db():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL,
+            username TEXT NOT NULL UNIQUE,
             password TEXT NOT NULL
         )
     ''')
     conn.commit()
     conn.close()
+
+# Hash a password
+def hash_password(password):
+    return sha256(password.encode()).hexdigest()
 
 # Route: Home Page
 @app.route('/')
@@ -32,16 +37,21 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        hashed_password = hash_password(password)  # Hash the password
 
         # Save the new user to the database
-        conn = sqlite3.connect('users.db')
-        cursor = conn.cursor()
-        cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
-        conn.commit()
-        conn.close()
+        try:
+            conn = sqlite3.connect('users.db')
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
+            conn.commit()
+            conn.close()
+            return 'Registration successful! <a href="/login">Login here</a>'
+        except sqlite3.IntegrityError:
+            return 'Username already exists. <a href="/register">Try again</a>'
+        except Exception as e:
+            return f'An error occurred: {str(e)}'
 
-        return 'Registration successful! <a href="/login">Login here</a>'
-    
     return render_template_string('''
         <h1>Register</h1>
         <form method="post">
@@ -57,19 +67,23 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        hashed_password = hash_password(password)  # Hash the password
 
         # Use parameterized queries to prevent SQL injection
-        conn = sqlite3.connect('users.db')
-        cursor = conn.cursor()
-        query = "SELECT * FROM users WHERE username = ? AND password = ?"
-        cursor.execute(query, (username, password))
-        user = cursor.fetchone()
-        conn.close()
+        try:
+            conn = sqlite3.connect('users.db')
+            cursor = conn.cursor()
+            query = "SELECT * FROM users WHERE username = ? AND password = ?"
+            cursor.execute(query, (username, hashed_password))
+            user = cursor.fetchone()
+            conn.close()
 
-        if user:
-            return f'Hello, {username}!'
-        else:
-            return 'Invalid username or password. <a href="/login">Try again</a>'
+            if user:
+                return f'Hello, {username}!'
+            else:
+                return 'Invalid username or password. <a href="/login">Try again</a>'
+        except Exception as e:
+            return f'An error occurred: {str(e)}'
 
     return render_template_string('''
         <h1>Login</h1>
@@ -82,4 +96,4 @@ def login():
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=False)
+    app.run(debug=False)  # Set debug=False for production
