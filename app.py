@@ -94,6 +94,7 @@ def login():
         </form>
     ''')
 
+# Bind to all interfaces 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=False)  # Set debug=False for production
+    app.run(debug=False, host='0.0.0.0')  # Set debug=False for production
