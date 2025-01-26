@@ -1,1 +1,8 @@
 users.db
+terraform.tfstate
+terraform.tfstate.backup
+# Ignore everything in terraform/
+terraform/*
+# But don't ignore .tf files
+!terraform/*.tf
+.terraform/
