@@ -46,3 +46,4 @@ jobs:
             docker stop authnest || true
             docker rm authnest || true
             docker run -d --name authnest -p 5000:5000 your-dockerhub-username/authnest:latest
+
