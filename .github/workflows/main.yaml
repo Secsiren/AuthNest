@@ -20,13 +20,13 @@ jobs:
 
       - name: Build and tag Docker image
         run: |
-          docker build -t your-dockerhub-username/authnest:latest -t your-dockerhub-username/authnest:$GITHUB_SHA .
+          docker build -t bugsiren/webapp:latest -t bugsiren/webapp:$GITHUB_SHA .
           docker images
 
       - name: Push Docker image
         run: |
-          docker push your-dockerhub-username/authnest:latest
-          docker push your-dockerhub-username/authnest:$GITHUB_SHA
+          docker push bugsiren/webapp:latest
+          docker push bugsiren/webapp:$GITHUB_SHA
 
   deploy:
     runs-on: ubuntu-latest
@@ -42,8 +42,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker pull your-dockerhub-username/authnest:latest
-            docker stop authnest || true
-            docker rm authnest || true
-            docker run -d --name authnest -p 5000:5000 your-dockerhub-username/authnest:latest
-
+            docker pull bugsiren/webapp:latest
+            docker stop webapp || true
+            docker rm webapp || true
+            docker run -d --name webapp -p 5000:5000 bugsiren/webapp:latest
