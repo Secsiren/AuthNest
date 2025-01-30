@@ -3,7 +3,21 @@
   hosts: webserver
   become: yes
   tasks:
-    # Task 1: Copy config.txt to /opt with specific permissions
+    # Task 1: Create devops group and add ec2-user to it
+    - name: Ensure devops group exists
+      group:
+        name: devops
+        state: present
+      tags: copy_file
+
+    - name: Add ec2-user to devops group
+      user:
+        name: ec2-user
+        groups: devops
+        append: yes
+      tags: copy_file
+
+    # Task 2: Copy config.txt to /opt with specific permissions
     - name: Copy config.txt to /opt
       copy:
         src: config.txt
@@ -13,7 +27,7 @@
         mode: '0660'
       tags: copy_file
 
-    # Task 2: Install PostgreSQL
+    # Task 3: Install PostgreSQL
     - name: Install PostgreSQL
       yum:
         name: postgresql-server
@@ -31,7 +45,7 @@
         enabled: yes
       tags: install_postgresql
 
-    # Task 3: Install and configure Nginx
+    # Task 4: Install and configure Nginx
     - name: Install Nginx
       yum:
         name: nginx
