@@ -28,9 +28,9 @@ Set Debug Mode to False:
 
 Ensure the Flask app runs in production mode (debug=False).
 
-# Run the Flask application
-python3 app.py
-Task 2: Containerization with Docker
+Run the Flask application
+    python3 app.py
+# Task 2: Containerization with Docker
 Objective
 Containerize the Flask web application using Docker and Docker Compose.
 
@@ -51,12 +51,12 @@ Build and Run the Docker Container:
 
 Build the Docker image and run the container.
 
-# Build the Docker image
+Build the Docker image
 docker build -t flask-app .
 
-# Run the Docker container
+Run the Docker container
 docker run -p 5000:5000 flask-app
-Task 3: Infrastructure as Code (IaC)
+# Task 3: Infrastructure as Code (IaC)
 Objective
 Use Terraform to define and deploy cloud resources (VPC, subnet, EC2 instance, security group, and Elastic IP) on AWS.
 
@@ -73,12 +73,12 @@ Verify Deployment:
 
 Check the outputs for the public IP address of the EC2 instance.
 
-# Initialize Terraform
+Initialize Terraform
 terraform init
 
-# Apply the Terraform configuration
+Apply the Terraform configuration
 terraform apply
-Task 4: CI/CD Pipeline with Cloud Integration
+# Task 4: CI/CD Pipeline with Cloud Integration
 Objective
 Create a CI/CD pipeline using GitHub Actions to build, push, and deploy the Flask application.
 
@@ -95,7 +95,7 @@ Run the Pipeline:
 
 Push changes to the main branch to trigger the pipeline.
 
-# GitHub Actions workflow file (.github/workflows/cicd.yml)
+GitHub Actions workflow file (.github/workflows/cicd.yml)
 name: CI/CD Pipeline
 
 on:
@@ -144,7 +144,7 @@ jobs:
             docker stop authnest || true
             docker rm authnest || true
             docker run -d --name authnest -p 5000:5000 your-dockerhub-username/authnest:latest
-Task 5: Site Reliability Engineering (SRE)
+# Task 5: Site Reliability Engineering (SRE)
 Objective
 Implement basic SRE principles by monitoring and ensuring the reliability of the deployed web application.
 
