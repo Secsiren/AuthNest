@@ -1,0 +1,54 @@
+---
+- name: Configure EC2 instance
+  hosts: webserver
+  become: yes
+  tasks:
+    # Task 1: Copy config.txt to /opt with specific permissions
+    - name: Copy config.txt to /opt
+      copy:
+        src: config.txt
+        dest: /opt/config.txt
+        owner: ec2-user
+        group: devops
+        mode: '0660'
+      tags: copy_file
+
+    # Task 2: Install PostgreSQL
+    - name: Install PostgreSQL
+      yum:
+        name: postgresql-server
+        state: latest
+      tags: install_postgresql
+
+    - name: Initialize PostgreSQL database
+      command: postgresql-setup --initdb
+      tags: install_postgresql
+
+    - name: Ensure PostgreSQL service is enabled and running
+      service:
+        name: postgresql
+        state: started
+        enabled: yes
+      tags: install_postgresql
+
+    # Task 3: Install and configure Nginx
+    - name: Install Nginx
+      yum:
+        name: nginx
+        state: latest
+      tags: install_nginx
+
+    - name: Ensure Nginx service is enabled and running
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+      tags: install_nginx
+
+    - name: Allow HTTP traffic in firewall
+      firewalld:
+        service: http
+        state: enabled
+        permanent: yes
+        immediate: yes
+      tags: install_nginx
